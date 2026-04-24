@@ -3,14 +3,28 @@ package mailserver
 import (
 	"fmt"
 	"io"
+	"math/rand"
+	"time"
 
 	"github.com/emersion/go-smtp"
 )
+
+var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 type Backend struct{}
 
 func (b *Backend) NewSession(c *smtp.Conn) (smtp.Session, error) {
 	return &Session{}, nil
+}
+
+func GenerateAddress() string {
+	var colours = []string{"red", "black", "green", "yellow", "purple", "pink", "orange"}
+	var animals = []string{"monkey", "cat", "dog", "wolf", "fish", "whale", "tiger"}
+
+	return fmt.Sprintf("%s.%s",
+		colours[rng.Intn(len(colours))],
+		animals[rng.Intn(len(animals))],
+	)
 }
 
 type Session struct {
@@ -41,6 +55,7 @@ func (s *Session) Data(r io.Reader) error {
 	fmt.Println("Body:")
 	fmt.Println(string(msg))
 	fmt.Println("===================")
+	fmt.Println(GenerateAddress())
 
 	return nil
 }
