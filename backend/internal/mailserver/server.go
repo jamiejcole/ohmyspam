@@ -1,10 +1,13 @@
 package mailserver
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"math/rand"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/emersion/go-smtp"
 )
@@ -56,6 +59,28 @@ func (s *Session) Data(r io.Reader) error {
 	fmt.Println(string(msg))
 	fmt.Println("===================")
 	fmt.Println(GenerateAddress())
+
+	WriteToDB(s, string(msg))
+
+	return nil
+}
+
+func WriteToDB(s *Session, msg string) error {
+	db, err := sql.Open("sqlite", "../data/db.sqlite")
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	sql := "INSERT INTO messages(id, mailbox_id, from_address, body_text) VALUES(?, ?, ?, ?)"
+
+	_, err = db.Exec(sql, uuid.NewString(), s.to[0], s.from, msg)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 
 	return nil
 }
