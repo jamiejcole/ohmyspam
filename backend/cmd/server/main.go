@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	appdb "ohmyspam/internal/db"
 	"ohmyspam/internal/mailserver"
 	"os"
 
@@ -19,6 +20,19 @@ func main() {
 	if port == "" {
 		port = "2525"
 	}
+
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "../data/db.sqlite"
+	}
+
+	database, err := appdb.OpenAndInit(dbPath)
+	if err != nil {
+		log.Fatalf("failed to initialize sqlite: %v", err)
+	}
+	defer database.Close()
+
+	log.Printf("SQLite ready at %s", dbPath)
 
 	be := &mailserver.Backend{}
 	s := smtp.NewServer(be)
