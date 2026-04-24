@@ -1,9 +1,8 @@
-package main
+package mailserver
 
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/emersion/go-smtp"
 )
@@ -48,16 +47,3 @@ func (s *Session) Data(r io.Reader) error {
 
 func (s *Session) Reset()        {}
 func (s *Session) Logout() error { return nil }
-
-func main() {
-	be := &Backend{}
-
-	server := smtp.NewServer(be)
-
-	server.Addr = ":2525"
-	server.Domain = "localhost"
-	server.AllowInsecureAuth = true
-
-	log.Println("SMTP server running on :2525")
-	log.Fatal(server.ListenAndServe())
-}
