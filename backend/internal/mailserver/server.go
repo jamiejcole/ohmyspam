@@ -73,6 +73,7 @@ func WriteToDB(s *Session, msg string) error {
 		return err
 	}
 
+	// For now insert mailbox_id as the recipient (will change later)
 	sql := "INSERT INTO messages(id, mailbox_id, from_address, body_text) VALUES(?, ?, ?, ?)"
 
 	_, err = db.Exec(sql, uuid.NewString(), s.to[0], s.from, msg)
