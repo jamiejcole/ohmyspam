@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"net/mail"
 	"time"
 
 	"github.com/google/uuid"
@@ -51,7 +52,7 @@ func (s *Session) Rcpt(to string, opts *smtp.RcptOptions) error {
 }
 
 func (s *Session) Data(r io.Reader) error {
-	msg, err := io.ReadAll(r)
+	msg, err := mail.ReadMessage(r)
 	if err != nil {
 		return err
 	}
@@ -59,16 +60,19 @@ func (s *Session) Data(r io.Reader) error {
 	fmt.Println("==== NEW EMAIL ====")
 	fmt.Println("From:", s.from)
 	fmt.Println("To:", s.to)
+	fmt.Println("Subject:", msg.Header.Get("Subject"))
 	fmt.Println("Body:")
-	fmt.Println(string(msg))
+	body, err := io.ReadAll(msg.Body)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(body))
 	fmt.Println("===================")
 
-	WriteToDB(s, string(msg))
-
-	return nil
+	return WriteToDB(s, msg.Header.Get("Subject"), string(body))
 }
 
-func WriteToDB(s *Session, msg string) error {
+func WriteToDB(s *Session, subject, body string) error {
 	db, err := sql.Open("sqlite", "../data/db.sqlite")
 
 	if err != nil {
@@ -77,9 +81,11 @@ func WriteToDB(s *Session, msg string) error {
 	}
 
 	// For now insert mailbox_id as the recipient (will change later)
-	sql := "INSERT INTO messages(id, mailbox_id, from_address, body_text) VALUES(?, ?, ?, ?)"
+	sql := "INSERT INTO messages(id, mailbox_id, from_address, subject, body_text) VALUES(?, ?, ?, ?, ?)"
 
-	_, err = db.Exec(sql, uuid.NewString(), s.to[0], s.from, msg)
+	defer db.Close()
+
+	_, err = db.Exec(sql, uuid.NewString(), s.to[0], s.from, subject, body)
 
 	if err != nil {
 		fmt.Println(err)
