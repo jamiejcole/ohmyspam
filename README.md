@@ -22,3 +22,13 @@ Send with `make test`
 
 **Build executable:**
 Use `make build` to create `bin/server`
+
+
+### Env config
+| Variable | Default | Values | Description |
+---------------------------------------------
+| MAIL_PORT | 2525 | xxxxx | Port on which the mail server runs |
+| DB_PATH | ../data/db.sqlite | <path> | Path to store db at |
+| AUTO_DELETE | true | `true|false` | Mail gets deleted automatically, or stored until manual deletion |
+| DELETE_AFTER_VIEW | true | `true|false` | Determines whether mail deletion timer is started at view time, or at receiving time.  |
+| MAIL_RETENTION | 5 | in minutes | Time after which mail is deleted |

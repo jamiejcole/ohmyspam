@@ -58,7 +58,6 @@ func (s *Session) Data(r io.Reader) error {
 	fmt.Println("Body:")
 	fmt.Println(string(msg))
 	fmt.Println("===================")
-	fmt.Println(GenerateAddress())
 
 	WriteToDB(s, string(msg))
 
