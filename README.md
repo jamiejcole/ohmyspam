@@ -32,3 +32,4 @@ Use `make build` to create `bin/server`
 | AUTO_DELETE | true | `true|false` | Mail gets deleted automatically, or stored until manual deletion |
 | DELETE_AFTER_VIEW | true | `true|false` | Determines whether mail deletion timer is started at view time, or at receiving time.  |
 | MAIL_RETENTION | 5 | in minutes | Time after which mail is deleted |
+| MAIL_DOMAIN | example.com | a domain | Domain at which to receive mail from

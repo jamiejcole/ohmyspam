@@ -14,7 +14,11 @@ import (
 
 var rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-type Backend struct{}
+type Backend struct {
+	AutoDelete          bool
+	DeleteAfterView     bool
+	MailRetentionPeriod int32
+}
 
 func (b *Backend) NewSession(c *smtp.Conn) (smtp.Session, error) {
 	return &Session{}, nil
